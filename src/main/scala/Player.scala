@@ -11,9 +11,7 @@ object Player {
     val colSelect = readLine(s"Specify a column for your ship of size $size (1-10): ")
     val coordinates = List(rowSelect.toLower - 'a', colSelect.toInt - 1)
     if (coordinates.find(i => i < 0 || i > 9).isDefined) {
-      println(
-        "Looks like you gave an invalid value in your coordinates. Try again!"
-      )
+      println("Looks like you gave an invalid value in your coordinates. Try again!")
       Thread.sleep(1000)
       return false
     }
@@ -47,8 +45,15 @@ object Player {
     true
   }
 
+  def initShips(x: List[Int] = List(2, 3, 3, 4, 5)): Unit = {
+    println(this)
+    if (x.length > 0) {
+      if (createShip(x.head)) initShips(x.tail) else initShips(x)
+    }
+  }
+
   def makeHit(): List[Int] = {
-    print(s"Specify a row to attack (A-J): ")
+    print("Specify a row to attack (A-J): ")
     val rowSelect = readChar()
     val colSelect = readLine(s"Specify a column to fire on (1-10): ")
     val coordinates = List(rowSelect.toLower - 'a', colSelect.toInt - 1)
@@ -77,17 +82,17 @@ object Player {
   override def toString: String = {
     val finalBoard = ('A' to 'J')
       .zip(_board.map(_.map(stringify)))
-      .map { case (c, s) => c + s.reduce(_ + _) }
-    "  1 2 3 4 5 6 7 8 9 10\n" + finalBoard.reduce(_ + "\n" + _)
+      .map { case (c, s) => (c +: s).mkString(" ") }
+    "  1 2 3 4 5 6 7 8 9 10\n" + finalBoard.mkString("\n")
   }
-  // Conversions:
-  val stringify = Map(
-    -2 -> " X",
-    -1 -> " +",
-    0 -> " -",
-    2 -> " D",
-    3 -> " C",
-    4 -> " B",
-    5 -> " A"
+
+  private val stringify = Map(
+    -2 -> 'X',
+    -1 -> '+',
+    0 -> '-',
+    2 -> 'D',
+    3 -> 'C',
+    4 -> 'B',
+    5 -> 'A'
   )
 }

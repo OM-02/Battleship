@@ -1,4 +1,5 @@
 import scala.util.Random
+import scala.collection.mutable
 object Computer {
   private val r = new Random()
 
@@ -27,11 +28,9 @@ object Computer {
     true
   }
 
-  def initShips(): Unit = {
-    if (List(2, 3, 3, 4, 5).map(createShip(_)).contains(false)) {
-      _board.map(_.mapInPlace(i => i - i))
-      initShips()
-    }
+  def initShips(x: List[Int] = List(2, 3, 3, 4, 5)): List[Int] = {
+    if (!x.exists(_ > 0)) return List()
+    else initShips(for (num <- x if num > 0) yield if (createShip(num)) 0 else num)
   }
 
   def makeHit(): List[Int] = List(r.nextInt(10), r.nextInt(10))
@@ -51,19 +50,10 @@ object Computer {
   def checkLoss(): Boolean = !_board.find(_.find(_ > 1).isDefined).isDefined
 
   override def toString: String = {
+    val stringify: Int => Char = { case -2 => 'X'; case -1 => '+'; case _ => '-' }
     val finalBoard = ('A' to 'J')
       .zip(_board.map(_.map(stringify)))
-      .map { case (c, s) => c + s.reduce(_ + _) }
-    "  1 2 3 4 5 6 7 8 9 10\n" + finalBoard.reduce(_ + "\n" + _)
+      .map { case (c, s) => (c +: s).mkString(" ") }
+    "  1 2 3 4 5 6 7 8 9 10\n" + finalBoard.mkString("\n")
   }
-
-  val stringify = Map(
-    -2 -> " X",
-    -1 -> " +",
-    0 -> " -",
-    2 -> " D",
-    3 -> " C",
-    4 -> " B",
-    5 -> " A"
-  )
 }
